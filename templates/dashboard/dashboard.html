@@ -1,6 +1,48 @@
 {{define "dashboard"}}
 <html>
     <h1>Dashboard</h1>
+    <br /><br />
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody id="tableData">
+            <tr>
+                <td>1</td>
+                <td>Ashish</td>
+            </tr>
+        </tbody>
+    </table>
+    <br /><br />
+    <table>
+        <tr>
+            <th>S.No</th>
+            <th>Name</th>
+        </tr>
+        {{range $i, $a := .TableData}}
+        <tr>
+            <td>{{$a.Id}}</td>
+            <td>{{$a.Name}}</td>
+        </tr>
+        {{end}}
+    </table>
 </html>
-{{end}}
 
+<script>
+    tdata = document.getElementById("tableData");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            let data = JSON.parse(this.responseText);
+            data.forEach((tr)=>{
+                tdata.innerHTML += "<tr><td>"+tr.Id+"</td><td>"+tr.Name+"</td></tr>"
+            });
+        }
+    };
+    xhttp.open("GET", "ajaxData", true);
+    xhttp.send();
+</script>
+{{end}}

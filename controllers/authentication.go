@@ -3,9 +3,11 @@ package controllers
 import (
     "net/http"
     "reakgo/utility"
+    "reakgo/models"
     "log"
     "time"
     "bytes"
+    "encoding/json"
     "golang.org/x/crypto/bcrypt"
 )
 
@@ -65,17 +67,52 @@ func ForgotPassword(w http.ResponseWriter, r *http.Request) {
                 utility.SendEmail("94b39c058d-2e1b95@inbox.mailtrap.io", "Forgot Password", buf.String())
             }
         }
-        log.Println(auth)
-    } else {
-        if(r.URL.Query().Get("token") != ""){
-            log.Println("token encountered")
-        }
     }
     utility.View.ExecuteTemplate(w, "forgotpassword", nil)
 }
 
 
-func Dashboard(w http.ResponseWriter, r *http.Request) {
-    Db.authentication.TokenVerify("zNF-vce-NSqhkNcUdrbUcnYxmF8Um8NPk-spPSox2UiMydjlzxFGO3T9iS3M")
-    utility.View.ExecuteTemplate(w, "dashboard", nil)
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+    if(r.Method=="POST"){
+        token := r.URL.Query().Get("token")
+        err := r.ParseForm()
+        if (err != nil){
+            log.Println("Form parsing failed !")
+        }
+        resp, err := Db.authentication.TokenVerify(token, r.FormValue("password"))
+        if(resp){
+            // Error
+        } else {
+            // Success
+        }
+    }
+    utility.View.ExecuteTemplate(w, "changepassword", nil)
 }
+
+func Dashboard(w http.ResponseWriter, r *http.Request) {
+    resp, err := Db.data.All()
+    if (err != nil){
+        log.Println("Form parsing failed !")
+    }
+    // Make sure the keys start with Capital letter to ensure export
+    data := struct{
+        TableData []models.Data
+    }{
+        resp,
+    }
+    utility.View.ExecuteTemplate(w, "dashboard", data)
+    log.Println(data.TableData[0].Name)
+}
+
+func AjaxData(w http.ResponseWriter, r *http.Request) {
+    resp, err := Db.data.All()
+    if (err != nil){
+        log.Println("Form parsing failed !")
+    }
+    json, err := json.Marshal(resp)
+    if (err != nil){
+        log.Println("Form parsing failed !")
+    }
+    w.Write([]byte(json))
+}
+

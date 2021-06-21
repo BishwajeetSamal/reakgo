@@ -1,5 +1,18 @@
 {{define "flash"}}
 <html>
-{{.type}} {{.message}}
+  <base href="/">
+  <link rel="stylesheet" href="assets/css/notifier.css">
+
+<div class="toast jam on" aria-hidden="true" id="toast">    
+</div>
+ 
+
+<script src="assets/js/notifier.js"></script>
+<script>
+  var header = "{{.header}}";     
+  var type = "{{.type}}";   
+  var message = "{{.message}}";  
+  notifier.show(header, message, type, '', 5000);
+</script>
 </html>
 {{end}}

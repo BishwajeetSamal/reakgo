@@ -18,15 +18,24 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("Form parsing failed !")
 		}
-		log.Println(r.FormValue("full_name"), r.FormValue("email"), r.FormValue("pwd"), r.FormValue("mob"), r.FormValue("address"))
 		auth, err := Db.authentication.GetUserByEmail(r.FormValue("email"))
 		if auth.Email == r.FormValue("email") {
-			log.Println("Email Already Exist!")
+			data2 := make(map[string]string)
+			data2["header"] = "Sorry !"
+			data2["type"] = "danger"
+			data2["message"] = "This Email already exist!"
+			utility.View.ExecuteTemplate(w, "flash", data2)
 		} else {
 			resp, _ := Db.authentication.InsertData(r.FormValue("full_name"), r.FormValue("email"), r.FormValue("pwd"), r.FormValue("mob"), r.FormValue("address"))
 			log.Println("Bishwajeet Samal Insertion")
 			log.Println(resp)
 			if resp == true {
+				data2 := make(map[string]string)
+				data2["header"] = "Thanks !"
+				data2["type"] = "success"
+				data2["message"] = "User Added Successfully !"
+
+				utility.View.ExecuteTemplate(w, "flash", data2)
 				utility.RedirectTo(w, r, "/dashboard")
 			}
 		}

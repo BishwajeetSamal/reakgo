@@ -13,29 +13,41 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	// if r.Method == "POST" {
-	// 	err := r.ParseForm()
-	// 	if err != nil {
-	// 		log.Println("Form parsing failed !")
-	// 	}
-	// 	auth, err := Db.authentication.GetUserByEmail(r.FormValue("email"))
-	// 	match := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(r.FormValue("password")))
-	// 	if match != nil {
-	// 		// Password match has failed
-	// 		data := make(map[string]string)
-	// 		data["type"] = "error"
-	// 		data["message"] = "Test Message"
-	// 		utility.View.ExecuteTemplate(w, "flash", data)
-	// 	} else {
-	// 		// Password match has been a success
-	// 		sessionData := []utility.Session{
-	// 			{Key: "username", Value: auth.Email},
-	// 			{Key: "type", Value: "user"},
-	// 		}
-	// 		utility.SessionSet(w, r, sessionData)
-	// 		utility.RedirectTo(w, r, utility.Config["appUrl"]+"/dashboard")
-	// 	}
-	// }
+	if r.Method == "POST" {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("Form parsing failed !")
+		}
+		log.Println(r.FormValue("full_name"), r.FormValue("email"), r.FormValue("pwd"), r.FormValue("mob"), r.FormValue("address"))
+		auth, err := Db.authentication.GetUserByEmail(r.FormValue("email"))
+		if auth.Email == r.FormValue("email") {
+			log.Println("Email Already Exist!")
+		} else {
+			resp, _ := Db.authentication.InsertData(r.FormValue("full_name"), r.FormValue("email"), r.FormValue("pwd"), r.FormValue("mob"), r.FormValue("address"))
+			log.Println("Bishwajeet Samal Insertion")
+			log.Println(resp)
+			if resp == true {
+				utility.RedirectTo(w, r, "/dashboard")
+			}
+		}
+
+		//match := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(r.FormValue("password")))
+		// 	if match != nil {
+		// 		// Password match has failed
+		// 		data := make(map[string]string)
+		// 		data["type"] = "error"
+		// 		data["message"] = "Test Message"
+		// 		utility.View.ExecuteTemplate(w, "flash", data)
+		// 	} else {
+		// 		// Password match has been a success
+		// 		sessionData := []utility.Session{
+		// 			{Key: "username", Value: auth.Email},
+		// 			{Key: "type", Value: "user"},
+		// 		}
+		// 		utility.SessionSet(w, r, sessionData)
+		// 		utility.RedirectTo(w, r, utility.Config["appUrl"]+"/dashboard")
+		// 	}
+	}
 	utility.View.ExecuteTemplate(w, "register", nil)
 }
 
